@@ -30,10 +30,5 @@
     "ADMIN_EMAIL": "@admin_email",
     "ADMIN_PASSWORD": "@admin_password",
     "ADMIN_NAME": "@admin_name"
-  },
-  "functions": {
-    "backend/src/server.js": {
-      "maxDuration": 30
-    }
   }
 }
