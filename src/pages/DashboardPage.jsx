@@ -1,16 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import StatCard from '../components/StatCard.jsx';
 import FilterPanel from '../components/FilterPanel.jsx';
 import NetMovementModal from '../components/NetMovementModal.jsx';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 
 const DashboardPage = () => {
+  const { user } = useAuth();
+  
+  // Initialize filters based on user role
+  const getInitialBase = () => {
+    if (user?.role === 'base_commander' && user?.assignedBase !== 'All Bases') {
+      return user.assignedBase;
+    }
+    return 'All Bases';
+  };
+
   const [filters, setFilters] = useState({
     dateFrom: '',
     dateTo: '',
-    base: 'All Bases',
+    base: getInitialBase(),
     equipmentType: 'All Equipment'
   });
+  
+  // Update filters when user changes (for role-based restrictions)
+  useEffect(() => {
+    if (user?.role === 'base_commander' && user?.assignedBase !== 'All Bases') {
+      setFilters(prev => ({
+        ...prev,
+        base: user.assignedBase
+      }));
+    }
+  }, [user]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [filteredStats, setFilteredStats] = useState(null);

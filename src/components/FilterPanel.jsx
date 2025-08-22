@@ -1,7 +1,10 @@
 import React from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 const FilterPanel = ({ filters, onFilterChange, onClearFilters }) => {
-  const bases = [
+  const { user } = useAuth();
+  
+  const allBases = [
     'All Bases',
     'Base Alpha',
     'Base Beta', 
@@ -9,6 +12,19 @@ const FilterPanel = ({ filters, onFilterChange, onClearFilters }) => {
     'Base Delta',
     'Base Echo'
   ];
+
+  // Filter bases based on user role
+  const getAvailableBases = () => {
+    if (user?.role === 'admin') {
+      return allBases; // Admin can see all bases
+    } else if (user?.role === 'base_commander' && user?.assignedBase !== 'All Bases') {
+      return [user.assignedBase]; // Base commanders can only see their assigned base
+    } else {
+      return allBases; // Logistics officers can see all bases
+    }
+  };
+
+  const bases = getAvailableBases();
 
   const equipmentTypes = [
     'All Equipment',
