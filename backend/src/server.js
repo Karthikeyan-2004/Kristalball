@@ -100,6 +100,20 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Root route for testing
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Military Asset Management API - Backend is running',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      auth: '/api/auth',
+      assets: '/api/assets'
+    }
+  });
+});
+
 // API routes
 app.use('/api/auth', auth);
 app.use('/api/assets', assets);
@@ -150,8 +164,11 @@ process.on('uncaughtException', (err) => {
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
-  logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-});
+// Only start server if not in Vercel (serverless) environment
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  const server = app.listen(PORT, () => {
+    logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  });
+}
 
 module.exports = app;

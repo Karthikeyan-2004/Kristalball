@@ -2,12 +2,13 @@
   "name": "military-asset-backend",
   "version": "1.0.0",
   "description": "Backend API for Military Asset Management System with RBAC",
-  "main": "src/server.js",
+  "main": "index.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "jest",
-    "seed": "node src/config/seedData.js"
+    "seed": "node src/config/seedData.js",
+    "vercel-build": "echo 'Building for Vercel...'"
   },
   "keywords": [
     "military",
