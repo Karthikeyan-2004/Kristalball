@@ -1,9 +1,56 @@
 import React, { useState } from 'react';
+import DataTable from '../components/DataTable';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const AssignmentsPage = () => {
-  const [assignments, setAssignments] = useState([]);
-  const [expenditures, setExpenditures] = useState([]);
+  const [assignments, setAssignments] = useState([
+    {
+      id: 1,
+      assetId: 'A001',
+      assetName: 'M4A1 Rifle',
+      personnelName: 'John Smith',
+      personnelRank: 'Sergeant',
+      assignmentDate: '2024-01-15',
+      purpose: 'Training Exercise',
+      status: 'Active'
+    },
+    {
+      id: 2,
+      assetId: 'V003',
+      assetName: 'Humvee',
+      personnelName: 'Sarah Johnson',
+      personnelRank: 'Lieutenant',
+      assignmentDate: '2024-01-10',
+      purpose: 'Patrol Duty',
+      status: 'Active'
+    }
+  ]);
+  
+  const [expenditures, setExpenditures] = useState([
+    {
+      id: 1,
+      assetId: 'A025',
+      assetName: '5.56mm Ammunition',
+      quantity: 200,
+      expendedDate: '2024-01-20',
+      reason: 'Training Exercise',
+      authorizedBy: 'Major Brown',
+      status: 'Approved'
+    },
+    {
+      id: 2,
+      assetId: 'M007',
+      assetName: 'Medical Supplies',
+      quantity: 50,
+      expendedDate: '2024-01-18',
+      reason: 'Field Medical Training',
+      authorizedBy: 'Captain Davis',
+      status: 'Approved'
+    }
+  ]);
+  
   const [activeTab, setActiveTab] = useState('assignments');
+  const [isLoading, setIsLoading] = useState(false);
 
   const [newAssignment, setNewAssignment] = useState({
     assetId: '',
@@ -21,29 +68,56 @@ const AssignmentsPage = () => {
     authorizedBy: ''
   });
 
+  // Demo loading function - removed
+
   const handleAssignmentSubmit = (e) => {
     e.preventDefault();
-    console.log('New assignment:', newAssignment);
-
-    setNewAssignment({
-      assetId: '',
-      personnelName: '',
-      personnelRank: '',
-      assignmentDate: '',
-      purpose: ''
-    });
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      const newAssignmentRecord = {
+        id: assignments.length + 1,
+        ...newAssignment,
+        assetName: `Asset ${newAssignment.assetId}`,
+        status: 'Active'
+      };
+      
+      setAssignments(prev => [...prev, newAssignmentRecord]);
+      setNewAssignment({
+        assetId: '',
+        personnelName: '',
+        personnelRank: '',
+        assignmentDate: '',
+        purpose: ''
+      });
+      setIsLoading(false);
+    }, 1000);
   };
 
   const handleExpenditureSubmit = (e) => {
     e.preventDefault();
-    console.log('New expenditure:', newExpenditure);
-    setNewExpenditure({
-      assetId: '',
-      expendedDate: '',
-      reason: '',
-      quantity: '',
-      authorizedBy: ''
-    });
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      const newExpenditureRecord = {
+        id: expenditures.length + 1,
+        ...newExpenditure,
+        assetName: `Asset ${newExpenditure.assetId}`,
+        status: 'Approved'
+      };
+      
+      setExpenditures(prev => [...prev, newExpenditureRecord]);
+      setNewExpenditure({
+        assetId: '',
+        expendedDate: '',
+        reason: '',
+        quantity: '',
+        authorizedBy: ''
+      });
+      setIsLoading(false);
+    }, 1000);
   };
 
   const handleAssignmentChange = (e) => {
@@ -63,6 +137,8 @@ const AssignmentsPage = () => {
         <p className="page-subtitle">Manage asset assignments to personnel and track asset expenditures</p>
       </header>
 
+
+
       {/* Tab Navigation */}
       <div className="tab-navigation">
         <button 
@@ -78,6 +154,14 @@ const AssignmentsPage = () => {
           Expenditures
         </button>
       </div>
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="loading-overlay">
+          <LoadingSpinner size="large" />
+          <p className="loading-text">Processing...</p>
+        </div>
+      )}
 
       {/* Assignments Tab */}
       {activeTab === 'assignments' && (
@@ -160,23 +244,28 @@ const AssignmentsPage = () => {
                 </div>
               </div>
 
-              <button type="submit" className="submit-button">
-                Assign Asset
+              <button type="submit" className="submit-button" disabled={isLoading}>
+                {isLoading ? 'Processing...' : 'Assign Asset'}
               </button>
             </form>
           </div>
 
           <div className="assignment-history-section">
             <h2>Assignment History</h2>
-            <div className="assignment-history">
-              {assignments.length === 0 ? (
-                <p className="no-data">No assignments recorded yet.</p>
-              ) : (
-                <div className="assignment-list">
-                  {/* Assignment history will be displayed here */}
-                </div>
-              )}
-            </div>
+            <DataTable
+              data={assignments}
+              columns={[
+                { key: 'assetId', label: 'Asset ID' },
+                { key: 'assetName', label: 'Asset Name' },
+                { key: 'personnelName', label: 'Personnel' },
+                { key: 'personnelRank', label: 'Rank' },
+                { key: 'assignmentDate', label: 'Date Assigned' },
+                { key: 'purpose', label: 'Purpose' },
+                { key: 'status', label: 'Status' }
+              ]}
+              searchable={true}
+              sortable={true}
+            />
           </div>
         </div>
       )}
@@ -255,23 +344,28 @@ const AssignmentsPage = () => {
                 </div>
               </div>
 
-              <button type="submit" className="submit-button">
-                Record Expenditure
+              <button type="submit" className="submit-button" disabled={isLoading}>
+                {isLoading ? 'Processing...' : 'Record Expenditure'}
               </button>
             </form>
           </div>
 
           <div className="expenditure-history-section">
             <h2>Expenditure History</h2>
-            <div className="expenditure-history">
-              {expenditures.length === 0 ? (
-                <p className="no-data">No expenditures recorded yet.</p>
-              ) : (
-                <div className="expenditure-list">
-                  {/* Expenditure history will be displayed here */}
-                </div>
-              )}
-            </div>
+            <DataTable
+              data={expenditures}
+              columns={[
+                { key: 'assetId', label: 'Asset ID' },
+                { key: 'assetName', label: 'Asset Name' },
+                { key: 'quantity', label: 'Quantity' },
+                { key: 'expendedDate', label: 'Date Expended' },
+                { key: 'reason', label: 'Reason' },
+                { key: 'authorizedBy', label: 'Authorized By' },
+                { key: 'status', label: 'Status' }
+              ]}
+              searchable={true}
+              sortable={true}
+            />
           </div>
         </div>
       )}

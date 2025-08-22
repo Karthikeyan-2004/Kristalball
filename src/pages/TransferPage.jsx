@@ -1,7 +1,42 @@
 import React, { useState } from 'react';
+import DataTable from '../components/DataTable';
 
 const TransferPage = () => {
-  const [transfers, setTransfers] = useState([]);
+  const [transfers, setTransfers] = useState([
+    {
+      id: 1,
+      assetName: 'Humvee',
+      quantity: 2,
+      fromBase: 'Base Alpha',
+      toBase: 'Base Beta',
+      transferDate: '2025-08-21',
+      reason: 'Operational Requirements',
+      status: 'Completed',
+      authorizedBy: 'Col. Johnson'
+    },
+    {
+      id: 2,
+      assetName: 'Radio Equipment',
+      quantity: 10,
+      fromBase: 'Base Beta',
+      toBase: 'Base Gamma',
+      transferDate: '2025-08-20',
+      reason: 'Equipment Redistribution',
+      status: 'In Transit',
+      authorizedBy: 'Maj. Smith'
+    },
+    {
+      id: 3,
+      assetName: 'Ammunition',
+      quantity: 500,
+      fromBase: 'Base Gamma',
+      toBase: 'Base Delta',
+      transferDate: '2025-08-19',
+      reason: 'Supply Replenishment',
+      status: 'Pending',
+      authorizedBy: 'Lt. Col. Davis'
+    }
+  ]);
   const [newTransfer, setNewTransfer] = useState({
     assetName: '',
     quantity: '',
@@ -10,6 +45,7 @@ const TransferPage = () => {
     transferDate: '',
     reason: '',
   });
+  const [loading, setLoading] = useState(false);
 
   const bases = [
     'Base Alpha',
@@ -29,18 +65,71 @@ const TransferPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add logic to handle transfer submission
-    console.log('New transfer:', newTransfer);
-    // Reset form
-    setNewTransfer({
-      assetName: '',
-      quantity: '',
-      fromBase: '',
-      toBase: '',
-      transferDate: '',
-      reason: '',
-    });
+    setLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      const newTransferRecord = {
+        id: transfers.length + 1,
+        ...newTransfer,
+        quantity: parseInt(newTransfer.quantity),
+        status: 'Pending',
+        authorizedBy: 'Current User' // In real app, this would come from auth context
+      };
+      
+      setTransfers(prev => [newTransferRecord, ...prev]);
+      setNewTransfer({
+        assetName: '',
+        quantity: '',
+        fromBase: '',
+        toBase: '',
+        transferDate: '',
+        reason: '',
+      });
+      setLoading(false);
+    }, 1000);
   };
+
+  const transferColumns = [
+    {
+      key: 'id',
+      label: 'ID',
+      render: (value) => `#${value}`
+    },
+    {
+      key: 'assetName',
+      label: 'Asset Name'
+    },
+    {
+      key: 'quantity',
+      label: 'Quantity'
+    },
+    {
+      key: 'fromBase',
+      label: 'From Base'
+    },
+    {
+      key: 'toBase',
+      label: 'To Base'
+    },
+    {
+      key: 'transferDate',
+      label: 'Transfer Date'
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (value) => (
+        <span className={`status-badge ${value.toLowerCase().replace(' ', '-')}`}>
+          {value}
+        </span>
+      )
+    },
+    {
+      key: 'authorizedBy',
+      label: 'Authorized By'
+    }
+  ];
 
   return (
     <div className="page-container">
@@ -149,16 +238,16 @@ const TransferPage = () => {
         </div>
 
         <div className="transfer-history-section">
-          <h2>Recent Transfers</h2>
-          <div className="transfer-history">
-            {transfers.length === 0 ? (
-              <p className="no-data">No transfers recorded yet.</p>
-            ) : (
-              <div className="transfer-list">
-                {/* Transfer history will be displayed here */}
-              </div>
-            )}
-          </div>
+          <h2>Transfer History</h2>
+          <DataTable 
+            data={transfers}
+            columns={transferColumns}
+            itemsPerPage={5}
+            searchable={true}
+            sortable={true}
+            loading={loading}
+            emptyMessage="No transfers recorded yet."
+          />
         </div>
       </div>
     </div>
