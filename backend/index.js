@@ -1,3 +1,3 @@
-const app = require('./src/server');
+const app = require('./serverless');
 
 module.exports = app;
