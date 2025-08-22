@@ -1,5 +1,4 @@
 {
-  "name": "military-asset-management-backend",
   "version": 2,
   "builds": [
     {
@@ -8,14 +7,6 @@
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "index.js"
-    },
-    {
-      "src": "/health",
-      "dest": "index.js"
-    },
     {
       "src": "/(.*)",
       "dest": "index.js"
